@@ -27,13 +27,18 @@ typedef struct s_table
 }	t_table;
 
 //philo
-void	philo(int size, char **arrey, t_philo *data);
+void	philo(t_table *table);
 
-// check_arg
-void	is_it_num(int size, char **arrey, t_table *table);
+// init_table
+void	init_table(t_table *table, int size, char **arrey);
+void	is_it_num(int size, char **arrey);
 void	check_each(char *num, int index);
+void	fill_data(t_table *table, char **arrey);
 
 // utils
 long	ft_atoi(const char *nptr);
+void	cleanup_table(t_table *table);
+void	free_memory(t_table *table);
+long	current_time_ms(void);
 
 #endif

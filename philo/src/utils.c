@@ -3,27 +3,53 @@
 long	ft_atoi(const char *nptr)
 {
 	long	num;
-	int		sign;
 	int		i;
 
 	i = 0;
 	num = 0;
-	sign = 1;
 	while (nptr[i] == ' ' || (nptr[i] >= 9 && nptr[i] <= 13))
 		i++;
-	if (nptr[i] == '-')
-	{
-		sign = -1;
-		i++;
-	}
-	else if (nptr[i] == '+')
+	if (nptr[i] == '+')
 		i++;
 	while (nptr[i] != '\0' && nptr[i] >= '0' && nptr[i] <= '9')
 	{
 		num = num * 10 + (nptr[i] - '0');
 		i++;
 	}
-	return (sign * num);
+	return (num);
+}
+
+void	free_memory(t_table *table)
+{
+	if (table->forks != NULL)
+	{
+		free(table->forks);
+		table->forks = NULL;
+	}
+	if (table->philosophers != NULL)
+	{
+		free(table->philosophers);
+		table->philosophers = NULL;
+	}
+}
+
+void	cleanup_table(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	if (table->forks != NULL)
+	{
+		while (i < table->num_philosophers)
+		{
+			if (pthread_mutex_destroy(&table->forks[i]) != 0)
+				printf("Error: Failed to destroy mutex for fork %d\n", i);
+			i++;
+		}
+	}
+	if (pthread_mutex_destroy(&table->print_lock) != 0)
+		printf("Error: Failed to destroy mutex for print_lock!\n");
+	free_memory(table);
 }
 
 long	current_time_ms(void)
@@ -32,22 +58,4 @@ long	current_time_ms(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-void	exit(t_table *table)
-{
-	int	i;
-
-	i = 0;
-	// if ()
-	while (i < table->num_philosophers)
-	{
-		pthread_mutex_destroy(&table->forks[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&table->print_lock);
-}
-
-void	free_memory(t_table *table)
-{
-
 }
