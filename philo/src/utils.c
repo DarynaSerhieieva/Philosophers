@@ -1,10 +1,10 @@
 #include "philo.h"
 
-int	ft_atoi(const char *nptr)
+long	ft_atoi(const char *nptr)
 {
-	int	num;
-	int	sign;
-	int	i;
+	long	num;
+	int		sign;
+	int		i;
 
 	i = 0;
 	num = 0;
@@ -24,4 +24,30 @@ int	ft_atoi(const char *nptr)
 		i++;
 	}
 	return (sign * num);
+}
+
+long	current_time_ms(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+void	exit(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	// if ()
+	while (i < table->num_philosophers)
+	{
+		pthread_mutex_destroy(&table->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&table->print_lock);
+}
+
+void	free_memory(t_table *table)
+{
+
 }

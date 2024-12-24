@@ -1,6 +1,6 @@
 #include "philo.h"
 
-int	check_each(char *num, int index)
+void	check_each(char *num, int index)
 {
 	int	i;
 
@@ -9,31 +9,50 @@ int	check_each(char *num, int index)
 	{
 		if (i == 0 && (num[i] == '+' || num[i] == '-'))
 			i++;
-		else if ((num[i] >= '0' && num[i] <= '9'))
-			i++;
-		else
+		else if ((num[i] <= '0' && num[i] >= '9'))
 		{
 			printf("The argument with index: %d, is not a number\n", index);
-			return (0);
+			exit (1);
 		}
+		i++;
 	}
-	return (1);
 }
 
-int	is_it_num(int size, char **arrey, t_data *data)
+void	is_it_num(int size, char **arrey, t_table *table)
 {
 	int	i;
 
 	i = 1;
 	while (i < size)
 	{
-		if (!check_each(arrey[i], i))
-			return (0);
+		check_each(arrey[i], i);
 		i++;
 	}
-	data->number_of_philosophers = ft_atoi(arrey[1]);
-	data->time_to_die = ft_atoi(arrey[2]);
-	data->time_to_eat = ft_atoi(arrey[3]);
-	data->time_to_sleep = ft_atoi(arrey[4]);
-	return (1);
+}
+
+void	init_table(t_table *table, int size, char **arrey)
+{
+	int	i;
+	int	num_philosophers;
+
+	i = 0;
+	is_it_num(size, arrey, &table);
+	num_philosophers = ft_atoi(arrey[1]);
+	table->num_philosophers = num_philosophers;
+	table->philosophers = malloc(num_philosophers * sizeof(philo));
+	table->forks = malloc(num_philosophers * sizeof(pthread_mutex_t));
+
+	while (i < num_philosophers)
+	{
+		table->philosophers[i].id = i + 1;
+		table->philosophers[i].time_to_die = ft_atoi(arrey[2]);
+		table->philosophers[i].time_to_eat = ft_atoi(arrey[3]);
+		table->philosophers[i].time_to_sleep = ft_atoi(arrey[4]);
+		table->philosophers[i].last_meal_time = 0;
+		table->philosophers[i].meals_eaten = 0;
+		pthread_mutex_init(&table->forks[i], NULL);
+		i++;
+	}
+	pthread_mutex_init(&table->print_lock, NULL);
+	table->start_time = current_time_ms();
 }
