@@ -11,7 +11,7 @@ void	check_each(char *num, int index)
 			i++;
 		else if ((num[i] < '0' || num[i] > '9'))
 		{
-			printf("The argument with index: %d, is not a number\n", index);
+			printf("Error: The argument %d is not positive integer\n", index);
 			exit (1);
 		}
 		i++;
@@ -32,43 +32,53 @@ void	is_it_num(int size, char **arrey)
 
 void	fill_data(t_table *table, char **arrey)
 {
-	int	i;
+	int		i;
+	long	time_to_die;
+	long	time_to_eat;
+	long	time_to_sleep;
 
 	i = 0;
-	while (i < table->num_philosophers)
+	time_to_die = ft_atoi(arrey[2]);
+	time_to_eat = ft_atoi(arrey[3]);
+	time_to_sleep = ft_atoi(arrey[4]);
+	while (i < table->num_philos)
 	{
 		table->philosophers[i].id = i + 1;
-		table->philosophers[i].time_to_die = ft_atoi(arrey[2]);
-		table->philosophers[i].time_to_eat = ft_atoi(arrey[3]);
-		table->philosophers[i].time_to_sleep = ft_atoi(arrey[4]);
+		table->philosophers[i].time_to_die = time_to_die;
+		table->philosophers[i].time_to_eat = time_to_eat;
+		table->philosophers[i].time_to_sleep = time_to_sleep;
 		table->philosophers[i].last_meal_time = 0;
 		table->philosophers[i].meals_eaten = 0;
-		pthread_mutex_init(&table->forks[i], NULL);
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+			cleanup_table(table, "Failed to initialize mutex for fork", 3);
 		i++;
 	}
-	pthread_mutex_init(&table->print_lock, NULL);
+	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
+		cleanup_table(table, "Failed to initialize print lock mutex", 1);
 	table->start_time = current_time_ms();
 }
 
 void	init_table(t_table *table, int size, char **arrey)
 {
-	int	num_philosophers;
+	int	num_philos;
 
 	is_it_num(size, arrey);
-	num_philosophers = ft_atoi(arrey[1]);
-	table->num_philosophers = num_philosophers;
-	table->philosophers = malloc(num_philosophers * sizeof(philo));
+	num_philos = (int)ft_atoi(arrey[1]);
+	if (num_philos <= 0)
+	{
+		printf("Error: Number of philosophers must be a positive integer.\n");
+		exit(1);
+	}
+	table->num_philos = num_philos;
+	table->philosophers = malloc(num_philos * sizeof(t_philo));
 	if (!table->philosophers)
 	{
-		printf("Error: Memory allocation for philosophers failed.\n");
-		exit(1);
+		printf("Error: Memory allocation for philosophers failed!\n");
+		exit (1);
 	}
-	table->forks = malloc(num_philosophers * sizeof(pthread_mutex_t));
+	memset(table->philosophers, 0, num_philos * sizeof(t_philo));
+	table->forks = malloc(num_philos * sizeof(pthread_mutex_t));
 	if (!table->forks)
-	{
-		free(table->philosophers);
-		printf("Error: Memory allocation for forks failed.\n");
-		exit(1);
-	}
+		cleanup_table(table, "Memory allocation for forks failed", 2);
 	fill_data(table, arrey);
 }

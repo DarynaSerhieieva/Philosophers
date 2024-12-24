@@ -13,43 +13,29 @@ long	ft_atoi(const char *nptr)
 		i++;
 	while (nptr[i] != '\0' && nptr[i] >= '0' && nptr[i] <= '9')
 	{
+		if (num > (LONG_MAX - (nptr[i] - '0')) / 10)
+		{
+			printf("Error: Number exceeds the maximum value for a long.\n");
+			exit(1);
+		}
 		num = num * 10 + (nptr[i] - '0');
 		i++;
 	}
 	return (num);
 }
 
-void	free_memory(t_table *table)
+void	free_memory(pthread_mutex_t *forks, t_philo *philosophers)
 {
-	if (table->forks != NULL)
+	if (forks)
 	{
-		free(table->forks);
-		table->forks = NULL;
+		free(forks);
+		forks = NULL;
 	}
-	if (table->philosophers != NULL)
+	if (philosophers)
 	{
-		free(table->philosophers);
-		table->philosophers = NULL;
+		free(philosophers);
+		philosophers = NULL;
 	}
-}
-
-void	cleanup_table(t_table *table)
-{
-	int	i;
-
-	i = 0;
-	if (table->forks != NULL)
-	{
-		while (i < table->num_philosophers)
-		{
-			if (pthread_mutex_destroy(&table->forks[i]) != 0)
-				printf("Error: Failed to destroy mutex for fork %d\n", i);
-			i++;
-		}
-	}
-	if (pthread_mutex_destroy(&table->print_lock) != 0)
-		printf("Error: Failed to destroy mutex for print_lock!\n");
-	free_memory(table);
 }
 
 long	current_time_ms(void)

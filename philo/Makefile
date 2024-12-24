@@ -6,7 +6,7 @@ INCLUDE_PACH = -I$(INCLUDE)
 SRC_DIR	= ./src/
 
 # Source files and object files
-SRC_FILES	= philo init_table utils
+SRC_FILES	= philo init_table utils cleanup_table
 SRC = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ = $(SRC:.c=.o)
 
