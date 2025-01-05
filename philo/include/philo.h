@@ -1,12 +1,13 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-# include "stdio.h"
+# include <unistd.h>
+# include <stdio.h>
 # include <string.h>
-# include "stdlib.h"
-# include "pthread.h"
-# include "sys/time.h"
-# include "limits.h"
+# include <stdlib.h>
+# include <pthread.h>
+# include <sys/time.h>
+# include <limits.h>
 
 typedef struct s_philo
 {

@@ -3,24 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
+/*   By: dserhiei <dserhiei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2024/12/24 22:44:29 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/01/05 18:48:01 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+void	*philo_rutin(void* arg)
+{
+	t_philo	*philo = (t_philo *)arg;
+
+	printf("Philosopher %d: Starting routine\n", philo->id);
+
+	while (1)
+	{
+		printf("Philosopher %d: Thinking\n", philo->id);
+		usleep(philo->time_to_eat * 1000);
+
+		printf("Philosopher %d: Eating\n", philo->id);
+		philo->last_meal_time = current_time_ms();
+		philo->meals_eaten++;
+		usleep(philo->time_to_eat * 1000);
+
+		printf("Philosopher %d: Sleeping\n", philo->id);
+		usleep(philo->time_to_sleep * 1000);
+	}
+}
+
 void	philo(t_table *table)
 {
-	for (int i = 0; i < table->num_philos; i++)
+	pthread_t	threads[table->num_philos];
+	int			i;
+	int			rc;
+
+	i = 0;
+	while (i < table->num_philos)
 	{
-		printf("id: %d\n", table->philosophers[i].id);
-		printf("time_to_die: %ld\n", table->philosophers[i].time_to_die);
-		printf("time_to_eat: %ld\n", table->philosophers[i].time_to_eat);
+		rc = pthread_create(&threads[i], NULL, philo_rutin, &table->philosophers[i]);
+        if (rc)
+			cleanup_table(table, "Unable to create thread", 0);
+		i++;
 	}
 
+	i = 0;
+	while (i < table->num_philos)
+	{
+		pthread_join(table->philosophers[i].thread, NULL);
+		i++;
+	}
 }
 
 int	main(int argc, char **argv)
