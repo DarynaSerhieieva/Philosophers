@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/01/05 19:39:13 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/01/05 19:45:59 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,3 +71,5 @@ int	main(int argc, char **argv)
 	cleanup_table(&table, "end", 0);
 	return (0);
 }
+
+
