@@ -27,9 +27,9 @@ void	cleanup_table(t_table *table, char *text, int status)
 	else if (status == 1)
 		mutex_destroy(table->forks, table->num_philos);
 	if (status == 2)
-		free_memory(NULL, table->philosophers);
+		free_memory(NULL, table->philos);
 	else
-		free_memory(table->forks, table->philosophers);
+		free_memory(table->forks, table->philos);
 	printf("Error: %s!\n", text);
 	exit (2);
 }

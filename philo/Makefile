@@ -6,7 +6,8 @@ INCLUDE_PACH = -I$(INCLUDE)
 SRC_DIR	= ./src/
 
 # Source files and object files
-SRC_FILES	= philo init_table utils cleanup_table
+SRC_FILES	= philo init_table utils cleanup_table \
+			routine
 SRC = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ = $(SRC:.c=.o)
 
@@ -15,7 +16,7 @@ all: $(NAME)
 
 # To link with the required internal Linux API:
 $(NAME): $(OBJ)
-	$(CC) $(OBJ) -o $(NAME)
+	$(CC) $(OBJ) -o $(NAME) -pthread
 
 # Compile object files
 %.o: %.c

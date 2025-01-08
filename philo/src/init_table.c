@@ -43,12 +43,12 @@ void	fill_data(t_table *table, char **arrey)
 	time_to_sleep = ft_atoi(arrey[4]);
 	while (i < table->num_philos)
 	{
-		table->philosophers[i].id = i + 1;
-		table->philosophers[i].time_to_die = time_to_die;
-		table->philosophers[i].time_to_eat = time_to_eat;
-		table->philosophers[i].time_to_sleep = time_to_sleep;
-		table->philosophers[i].last_meal_time = 0;
-		table->philosophers[i].meals_eaten = 0;
+		table->philos[i].id = i + 1;
+		table->philos[i].time_to_die = time_to_die;
+		table->philos[i].time_to_eat = time_to_eat;
+		table->philos[i].time_to_sleep = time_to_sleep;
+		table->philos[i].last_meal_time = 0;
+		table->philos[i].meals_eaten = 0;
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
 			cleanup_table(table, "Failed to initialize mutex for fork", 3);
 		i++;
@@ -70,13 +70,13 @@ void	init_table(t_table *table, int size, char **arrey)
 		exit(1);
 	}
 	table->num_philos = num_philos;
-	table->philosophers = malloc(num_philos * sizeof(t_philo));
-	if (!table->philosophers)
+	table->philos = malloc(num_philos * sizeof(t_philo));
+	if (!table->philos)
 	{
 		printf("Error: Memory allocation for philosophers failed!\n");
 		exit (1);
 	}
-	memset(table->philosophers, 0, num_philos * sizeof(t_philo));
+	memset(table->philos, 0, num_philos * sizeof(t_philo));
 	table->forks = malloc(num_philos * sizeof(pthread_mutex_t));
 	if (!table->forks)
 		cleanup_table(table, "Memory allocation for forks failed", 2);

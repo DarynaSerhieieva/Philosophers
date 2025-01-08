@@ -9,6 +9,8 @@
 # include <sys/time.h>
 # include <limits.h>
 
+
+
 typedef struct s_philo
 {
 	int			id;
@@ -26,11 +28,17 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	long			start_time;
-	t_philo			*philosophers;
+	t_philo			*philos;
 }	t_table;
 
 //philo
 void	philo(t_table *table);
+
+//routine
+void	*routine(void *arg);
+void	thinking(t_philo *philo);
+void	eating(t_philo *philo);
+void	sleeping(t_philo *philo);
 
 // init_table
 void	init_table(t_table *table, int size, char **arrey);
