@@ -41,13 +41,14 @@ void	fill_data(t_table *table, char **arrey)
 	time_to_die = ft_atoi(arrey[2]);
 	time_to_eat = ft_atoi(arrey[3]);
 	time_to_sleep = ft_atoi(arrey[4]);
+	table->start_time = current_time_ms();
 	while (i < table->num_philos)
 	{
 		table->philos[i].id = i + 1;
 		table->philos[i].time_to_die = time_to_die;
 		table->philos[i].time_to_eat = time_to_eat;
 		table->philos[i].time_to_sleep = time_to_sleep;
-		table->philos[i].last_meal_time = current_time_ms();
+		table->philos[i].last_meal_time = table->start_time;
 		table->philos[i].meals_eaten = 0;
 		table->philos[i].table = table;
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
@@ -56,7 +57,6 @@ void	fill_data(t_table *table, char **arrey)
 	}
 	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
 		cleanup_table(table, "Failed to initialize print lock mutex", 1);
-	table->start_time = current_time_ms();
 }
 
 void	init_table(t_table *table, int size, char **arrey)

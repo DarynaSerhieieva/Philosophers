@@ -2,23 +2,26 @@
 
 void	thinking(t_philo *philo)
 {
-	if (lock_unclok(philo, "thinking"))
+	if (lock_unclok_print(philo, "is thinking"))
 		return ;
 	usleep(philo->time_to_eat * 1000);
 }
 
 void	eating(t_philo *philo)
 {
-	if (lock_unclok(philo, "eating"))
+	lock_fork(philo, philo->id - 1);
+	lock_fork(philo, philo->id);
+	if (lock_unclok_print(philo, "is eating"))
 		return ;
 	usleep(philo->time_to_eat * 1000);
 	philo->last_meal_time = current_time_ms();
+	unlock_forks(philo);
 	philo->meals_eaten++;
 }
 
 void	sleeping(t_philo *philo)
 {
-	if (lock_unclok(philo, "sleeping"))
+	if (lock_unclok_print(philo, "is sleeping"))
 		return ;
 	usleep(philo->time_to_sleep * 1000);
 }

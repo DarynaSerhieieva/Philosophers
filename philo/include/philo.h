@@ -42,6 +42,11 @@ void	thinking(t_philo *philo);
 void	eating(t_philo *philo);
 void	sleeping(t_philo *philo);
 
+//lock_unclok
+int		lock_unclok_print(t_philo *philo, char *massege);
+void	lock_fork(t_philo *philo, int id);
+void	unlock_forks(t_philo *philo);
+
 // init_table
 void	init_table(t_table *table, int size, char **arrey);
 void	is_it_num(int size, char **arrey);
@@ -56,6 +61,5 @@ void	mutex_destroy(pthread_mutex_t *forks, int s);
 long	ft_atoi(const char *nptr);
 void	free_memory(pthread_mutex_t *forks, t_philo *philosophers);
 long	current_time_ms(void);
-int		lock_unclok(t_philo *philo, char *massege);
 
 #endif
