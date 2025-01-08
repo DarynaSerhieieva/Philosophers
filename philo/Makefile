@@ -7,7 +7,7 @@ SRC_DIR	= ./src/
 
 # Source files and object files
 SRC_FILES	= philo init_table utils cleanup_table \
-			routine lock_unclok
+			routine lock_unlock
 SRC = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ = $(SRC:.c=.o)
 

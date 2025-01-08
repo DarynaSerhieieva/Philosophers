@@ -7,6 +7,7 @@ void	mutex_destroy(pthread_mutex_t *forks, int s)
 	i = 0;
 	while (i < s)
 	{
+		pthread_mutex_unlock(&forks[i]);
 		if (pthread_mutex_destroy(&forks[i]) != 0)
 		{
 			printf("Error: Failed to destroy mutex for fork %d\n", i);

@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/01/08 17:04:17 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/01/08 22:28:15 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	main(int argc, char **argv)
 	}
 	init_table(&table, argc, argv);
 	philo(&table);
-	usleep(100000);
+	usleep(1000000);
 	cleanup_table(&table, "end", 0);
 	return (0);
 }

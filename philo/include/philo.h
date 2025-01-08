@@ -44,7 +44,7 @@ void	sleeping(t_philo *philo);
 
 //lock_unclok
 int		lock_unclok_print(t_philo *philo, char *massege);
-void	lock_fork(t_philo *philo, int id);
+int		lock_fork(t_philo *philo, int id);
 void	unlock_forks(t_philo *philo);
 
 // init_table

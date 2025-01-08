@@ -4,15 +4,19 @@ void	thinking(t_philo *philo)
 {
 	if (lock_unclok_print(philo, "is thinking"))
 		return ;
-	usleep(philo->time_to_eat * 1000);
 }
 
 void	eating(t_philo *philo)
 {
-	lock_fork(philo, philo->id - 1);
-	lock_fork(philo, philo->id);
-	if (lock_unclok_print(philo, "is eating"))
+	if (lock_fork(philo, philo->id - 1))
 		return ;
+	if (lock_fork(philo, philo->id))
+		return ;
+	if (lock_unclok_print(philo, "is eating"))
+	{
+		unlock_forks(philo);
+		return ;
+	}
 	usleep(philo->time_to_eat * 1000);
 	philo->last_meal_time = current_time_ms();
 	unlock_forks(philo);

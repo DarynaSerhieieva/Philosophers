@@ -1,4 +1,4 @@
-#include "philo.h"
+#include <philo.h>
 
 int	lock_unclok_print(t_philo *philo, char *massege)
 {
@@ -11,19 +11,22 @@ int	lock_unclok_print(t_philo *philo, char *massege)
 		pthread_mutex_unlock(&philo->table->print_lock);
 		return (1);
 	}
-	printf("%ld %d is %s\n", current_time, philo->id, massege);
+	printf("%ld %d %s\n", current_time, philo->id, massege);
 	pthread_mutex_unlock(&philo->table->print_lock);
 	return (0);
 }
 
-void	lock_fork(t_philo *philo, int id)
+int	lock_fork(t_philo *philo, int id)
 {
-	long	current_time;
-
-	current_time = current_time_ms();
+	if (philo->table->should_stop)
+	{
+		if (id == philo->id)
+			pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
+		return (1);
+	}
 	pthread_mutex_lock(&philo->table->forks[id]);
-	if (lock_unclok_print(philo, "has taken a fork"))
-		return ;
+	lock_unclok_print(philo, "has taken a fork");
+	return (1);
 }
 
 void	unlock_forks(t_philo *philo)
