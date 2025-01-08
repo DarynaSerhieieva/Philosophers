@@ -45,3 +45,19 @@ long	current_time_ms(void)
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
+
+int	lock_unclok(t_philo *philo, char *massege)
+{
+	long	current_time;
+
+	current_time = current_time_ms();
+	pthread_mutex_lock(&philo->table->print_lock);
+	if (philo->table->should_stop)
+	{
+		pthread_mutex_unlock(&philo->table->print_lock);
+		return (1);
+	}
+	printf("%ld %d is %s\n", current_time, philo->id, massege);
+	pthread_mutex_unlock(&philo->table->print_lock);
+	return (0);
+}

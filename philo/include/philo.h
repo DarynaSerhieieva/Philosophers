@@ -13,13 +13,14 @@
 
 typedef struct s_philo
 {
-	int			id;
-	pthread_t	thread;
-	long		time_to_die;
-	long		time_to_eat;
-	long		time_to_sleep;
-	long		last_meal_time;
-	int			meals_eaten;
+	int				id;
+	pthread_t		thread;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
+	long			last_meal_time;
+	int				meals_eaten;
+	struct s_table	*table;
 }	t_philo;
 
 typedef struct s_table
@@ -28,6 +29,7 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	long			start_time;
+	int				should_stop;
 	t_philo			*philos;
 }	t_table;
 
@@ -54,5 +56,6 @@ void	mutex_destroy(pthread_mutex_t *forks, int s);
 long	ft_atoi(const char *nptr);
 void	free_memory(pthread_mutex_t *forks, t_philo *philosophers);
 long	current_time_ms(void);
+int		lock_unclok(t_philo *philo, char *massege);
 
 #endif
