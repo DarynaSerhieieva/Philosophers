@@ -44,6 +44,7 @@ void	fill_data(t_table *table, char **arrey)
 	table->start_time = current_time_ms();
 	while (i < table->num_philos)
 	{
+		table->i_forks[i] = 0;
 		table->philos[i].id = i + 1;
 		table->philos[i].time_to_die = time_to_die;
 		table->philos[i].time_to_eat = time_to_eat;
@@ -52,7 +53,7 @@ void	fill_data(t_table *table, char **arrey)
 		table->philos[i].meals_eaten = 0;
 		table->philos[i].table = table;
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-			cleanup_table(table, "Failed to initialize mutex for fork", 3);
+			cleanup_table(table, "Failed to initialize mutex for fork", 4);
 		i++;
 	}
 	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
@@ -78,9 +79,13 @@ void	init_table(t_table *table, int size, char **arrey)
 		exit (1);
 	}
 	memset(table->philos, 0, num_philos * sizeof(t_philo));
+	table->i_forks = malloc(num_philos * sizeof(int));
+	if (!table->i_forks)
+		cleanup_table(table, "Memory allocation for forks failed", 2);
+	// memset(table->i_forks, 0, num_philos * sizeof(int));
 	table->forks = malloc(num_philos * sizeof(pthread_mutex_t));
 	if (!table->forks)
-		cleanup_table(table, "Memory allocation for forks failed", 2);
+		cleanup_table(table, "Memory allocation for forks failed", 3);
 	fill_data(table, arrey);
 	table->should_stop = 0;
 }

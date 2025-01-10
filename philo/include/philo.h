@@ -27,6 +27,7 @@ typedef struct s_table
 {
 	int				num_philos;
 	pthread_mutex_t	*forks;
+	int				*i_forks;
 	pthread_mutex_t	print_lock;
 	long			start_time;
 	int				should_stop;
@@ -44,7 +45,7 @@ void	sleeping(t_philo *philo);
 
 //lock_unclok
 int		lock_unclok_print(t_philo *philo, char *massege);
-int		lock_fork(t_philo *philo, int id);
+int		lock_forks(t_philo *philo);
 void	unlock_forks(t_philo *philo);
 
 // init_table
@@ -55,11 +56,13 @@ void	fill_data(t_table *table, char **arrey);
 
 //cleanup_table
 void	cleanup_table(t_table *table, char *text, int status);
-void	mutex_destroy(pthread_mutex_t *forks, int s);
+void	mutex_destroy(pthread_mutex_t *forks, int **i_forks, int s);
 
 // utils
 long	ft_atoi(const char *nptr);
-void	free_memory(pthread_mutex_t *forks, t_philo *philosophers);
+void	free_item(void **item);
+void	free_memory(pthread_mutex_t **forks, t_philo **philos, int **i_phil);
+// void	free_memory(pthread_mutex_t *forks, t_philo *philosophers);
 long	current_time_ms(void);
 
 #endif

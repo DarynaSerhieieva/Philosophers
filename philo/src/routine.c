@@ -8,9 +8,7 @@ void	thinking(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
-	if (lock_fork(philo, philo->id - 1))
-		return ;
-	if (lock_fork(philo, philo->id))
+	if (lock_forks(philo))
 		return ;
 	if (lock_unclok_print(philo, "is eating"))
 	{

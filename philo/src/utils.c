@@ -24,18 +24,23 @@ long	ft_atoi(const char *nptr)
 	return (num);
 }
 
-void	free_memory(pthread_mutex_t *forks, t_philo *philosophers)
+void	free_item(void **item)
+{
+	if (item && *item)
+	{
+		free(*item);
+		*item = NULL;
+	}
+}
+
+void	free_memory(pthread_mutex_t **forks, t_philo **philos, int **i_phil)
 {
 	if (forks)
-	{
-		free(forks);
-		forks = NULL;
-	}
-	if (philosophers)
-	{
-		free(philosophers);
-		philosophers = NULL;
-	}
+		free_item((void **)forks);
+	if (philos)
+		free_item((void **)philos);
+	if (i_phil)
+		free_item((void **)i_phil);
 }
 
 long	current_time_ms(void)
