@@ -1,11 +1,11 @@
 #include <philo.h>
 
-int	lock_unclok_print(t_philo *philo, char *massege)
+int	print_message(t_philo *philo, char *massege)
 {
 	long	current_time;
 
-	current_time = current_time_ms();
 	pthread_mutex_lock(&philo->table->print_lock);
+	current_time = current_time_ms();
 	if (philo->table->should_stop)
 	{
 		pthread_mutex_unlock(&philo->table->print_lock);
@@ -16,30 +16,36 @@ int	lock_unclok_print(t_philo *philo, char *massege)
 	return (0);
 }
 
-int	lock_forks(t_philo *philo)
+int	lock_fork(t_philo *philo, int id)
 {
-	pthread_mutex_lock(&philo->table->forks[philo->id - 1]);
-	philo->table->i_forks[philo->id - 1] = 1;
-	if (lock_unclok_print(philo, "has taken a fork"))
+
+	if (philo->table->i_forks[id] == 0)
 	{
-		pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
-		philo->table->i_forks[philo->id - 1] = 0;
-		return (1);
-	}
-	pthread_mutex_lock(&philo->table->forks[philo->id]);
-	philo->table->i_forks[philo->id] = 1;
-	if (lock_unclok_print(philo, "has taken a fork"))
-	{
-		unlock_forks(philo);
-		return (1);
+		pthread_mutex_lock(&philo->table->forks[id]);
+		philo->table->i_forks[id] = 1;
+		if (print_message(philo, "has taken a fork"))
+		{
+			return (1);
+		}
 	}
 	return (0);
 }
 
 void	unlock_forks(t_philo *philo)
 {
-	philo->table->i_forks[philo->id - 1] = 0;
-	philo->table->i_forks[philo->id] = 0;
-	pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
-	pthread_mutex_unlock(&philo->table->forks[philo->id]);
+	int	left;
+	int	right;
+
+	left = philo->id - 1;
+	right = philo->id;
+
+	if (left < 0)
+	{
+		left = philo->table->num_philos - 1;
+	}
+	philo->table->i_forks[left] = 0;
+	philo->table->i_forks[right] = 0;
+
+	pthread_mutex_unlock(&philo->table->forks[left]);
+	pthread_mutex_unlock(&philo->table->forks[right]);
 }

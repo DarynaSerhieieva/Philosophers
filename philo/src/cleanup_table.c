@@ -10,7 +10,6 @@ void	mutex_destroy(pthread_mutex_t *forks, int **i_forks, int s)
 	{
 		if (i_forks[i])
 		{
-			printf("i_forks: %d, id : %d\n", *i_forks[i], i);
 			pthread_mutex_unlock(&forks[i]);
 			i_forks[i] = 0;
 		}

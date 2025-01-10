@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/01/10 20:29:27 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/01/10 23:01:15 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	philo(t_table *table)
 	i = 0;
 	while (i < table->num_philos)
 	{
-		pthread_join(table->philos[i].thread, NULL);
+		pthread_join(threads[i], NULL);
 		i++;
 	}
 	free(threads);

@@ -41,11 +41,13 @@ void	philo(t_table *table);
 void	*routine(void *arg);
 void	thinking(t_philo *philo);
 void	eating(t_philo *philo);
+int		time_to_die(t_philo *philo);
 void	sleeping(t_philo *philo);
 
 //lock_unclok
-int		lock_unclok_print(t_philo *philo, char *massege);
-int		lock_forks(t_philo *philo);
+int		print_message(t_philo *philo, char *massege);
+// int		lock_forks(t_philo *philo);
+int		lock_fork(t_philo *philo, int id);
 void	unlock_forks(t_philo *philo);
 
 // init_table
