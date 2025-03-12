@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/01/10 23:01:15 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/03/13 00:07:32 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ int	main(int argc, char **argv)
 {
 	t_table	table;
 
-	if (argc != 5)
+	if (argc != 5 || argc != 6)
 	{
-		printf("Should be 4 arguments, but you have %d\n", argc - 1);
+		printf("Should be 4 or 5 arguments, but you have %d\n", argc - 1);
 		return (1);
 	}
 	init_table(&table, argc, argv);
 	philo(&table);
-	usleep(1000000);
-	cleanup_table(&table, "end", 0);
+	// usleep(1000000);
+	cleanup_table(&table, "end", 10);
 	return (0);
 }

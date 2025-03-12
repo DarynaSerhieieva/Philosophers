@@ -31,6 +31,7 @@ typedef struct s_table
 	pthread_mutex_t	print_lock;
 	long			start_time;
 	int				should_stop;
+	int				must_eat;
 	t_philo			*philos;
 }	t_table;
 
@@ -58,7 +59,7 @@ void	fill_data(t_table *table, char **arrey);
 
 //cleanup_table
 void	cleanup_table(t_table *table, char *text, int status);
-void	mutex_destroy(pthread_mutex_t *forks, int **i_forks, int s);
+void	mutex_destroy(pthread_mutex_t *forks, int s);
 
 // utils
 long	ft_atoi(const char *nptr);
