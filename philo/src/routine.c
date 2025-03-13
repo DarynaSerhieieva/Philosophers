@@ -83,7 +83,19 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	while (!time_to_die(philo))
+	if (philo->table->must_eat == 0 || philo->time_to_die == 0)
+		return (NULL);
+	if (philo->table->num_philos == 1)
+	{
+		pthread_mutex_lock(&philo->table->print_lock);
+		print_message(philo, "has taken a fork");
+		usleep(philo->time_to_die * 1000);
+		print_message(philo, "dead");
+		pthread_mutex_unlock(&philo->table->print_lock);
+		return ;
+	}
+	while (!time_to_die(philo) && \
+	(philo->meals_eaten != philo->table->must_eat || philo->table->must_eat == 0))
 	{
 		eating(philo);
 		sleeping(philo);

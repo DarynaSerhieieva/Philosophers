@@ -1,34 +1,30 @@
 #include "philo.h"
 
-void	check_each(char *num, int index)
+int	is_pos_num(int size, char **arrey)
 {
 	int	i;
+	int	j;
 
-	i = 0;
-	while (num[i] != '\0')
+	j = 1;
+	while (j < size)
 	{
-		if (i == 0 && (num[i] == '+'))
-			i++;
-		else if ((num[i] < '0' || num[i] > '9'))
+		i = 0;
+		while (arrey[j][i] != '\0')
 		{
-			printf("Error: The argument %d is not positive integer\n", index);
-			exit (1);
+			if (i == 0 && (arrey[j][i] == '+'))
+				i++;
+			else if ((arrey[j][i] < '0' || arrey[j][i] > '9'))
+			{
+				printf("Error: The argument %d is not positive int\n", j);
+				return (1);
+			}
+			i++;
 		}
-		i++;
+		j++;
 	}
+	return (0);
 }
 
-void	is_it_num(int size, char **arrey)
-{
-	int	i;
-
-	i = 1;
-	while (i < size)
-	{
-		check_each(arrey[i], i);
-		i++;
-	}
-}
 
 void	fill_data(t_table *table, char **arrey)
 {
@@ -36,12 +32,13 @@ void	fill_data(t_table *table, char **arrey)
 	long	time_to_die;
 	long	time_to_eat;
 	long	time_to_sleep;
+	long	time;
 
 	i = 0;
 	time_to_die = ft_atoi(arrey[2]);
 	time_to_eat = ft_atoi(arrey[3]);
 	time_to_sleep = ft_atoi(arrey[4]);
-	table->start_time = current_time_ms();
+	time = current_time_ms();
 	while (i < table->num_philos)
 	{
 		table->i_forks[i] = 0;
@@ -49,43 +46,54 @@ void	fill_data(t_table *table, char **arrey)
 		table->philos[i].time_to_die = time_to_die;
 		table->philos[i].time_to_eat = time_to_eat;
 		table->philos[i].time_to_sleep = time_to_sleep;
-		table->philos[i].last_meal_time = table->start_time;
+		table->philos[i].last_meal_time = time;
 		table->philos[i].meals_eaten = 0;
 		table->philos[i].table = table;
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-			cleanup_table(table, "Failed to initialize mutex for fork", 4);
 		i++;
 	}
-	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
-		cleanup_table(table, "Failed to initialize print lock mutex", 1);
+	table->should_stop = 0;
+	table->must_eat = -1;
 }
 
-void	init_table(t_table *table, int size, char **arrey)
+int	mem_all(t_table *table, int size)
+{
+	int	i;
+
+	i = 0;
+	table->philos = malloc(size * sizeof(t_philo));
+	if (!table->philos)
+		return (printf("Error: Memory allocation for philos failed!\n"), 1);
+	table->i_forks = malloc(size * sizeof(int));
+	if (!table->i_forks)
+		return (printf("Error: Memory allocation for forks failed!\n"), 1);
+	table->forks = malloc(size * sizeof(pthread_mutex_t));
+	if (!table->forks)
+		return (printf("Error: Allocation mutex for forks failed!\n"), 1);
+	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
+		return (printf("Error: Failed to initialize print lock mutex!\n"), 1);
+	while (i < size)
+	{
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+			return (printf("Error: Failed to initialize mutex for fork!\n"), 1);
+		i++;
+	}
+	return (0);
+}
+
+int	init_table(t_table *table, int size, char **arrey)
 {
 	int	num_philos;
 
-	is_it_num(size, arrey);
+	if (is_pos_num(size, arrey))
+		return (1);
 	num_philos = (int)ft_atoi(arrey[1]);
 	if (num_philos <= 0)
-	{
-		printf("Error: Number of philosophers must be a positive integer.\n");
-		exit(1);
-	}
+		return (printf("Error: Number of philos must be at least 1.\n"), 1);
 	table->num_philos = num_philos;
-	table->philos = malloc(num_philos * sizeof(t_philo));
-	if (!table->philos)
-	{
-		printf("Error: Memory allocation for philosophers failed!\n");
-		exit (1);
-	}
-	memset(table->philos, 0, num_philos * sizeof(t_philo));
-	table->i_forks = malloc(num_philos * sizeof(int));
-	if (!table->i_forks)
-		cleanup_table(table, "Memory allocation for forks failed", 2);
-	// memset(table->i_forks, 0, num_philos * sizeof(int));
-	table->forks = malloc(num_philos * sizeof(pthread_mutex_t));
-	if (!table->forks)
-		cleanup_table(table, "Memory allocation for forks failed", 3);
+	if (mem_all(table, num_philos))
+		return (1);
+	if (size == 6)
+		table->must_eat = (int)ft_atoi(arrey[5]);
 	fill_data(table, arrey);
-	table->should_stop = 0;
+	return (0);
 }

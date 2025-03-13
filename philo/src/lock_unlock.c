@@ -4,15 +4,10 @@ int	print_message(t_philo *philo, char *massege)
 {
 	long	current_time;
 
-	// pthread_mutex_lock(&philo->table->print_lock);
 	current_time = current_time_ms();
 	if (philo->table->should_stop)
-	{
-		// pthread_mutex_unlock(&philo->table->print_lock);
 		return (1);
-	}
 	printf("%ld %d %s\n", current_time, philo->id, massege);
-	// pthread_mutex_unlock(&philo->table->print_lock);
 	return (0);
 }
 

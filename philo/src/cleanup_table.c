@@ -1,38 +1,50 @@
 #include "philo.h"
 
+void	free_item(void **item)
+{
+	if (item && *item)
+	{
+		free(*item);
+		*item = NULL;
+	}
+}
+
+void	free_memory(pthread_mutex_t **forks, t_philo **philos, int **i_phil)
+{
+	if (forks && *forks)
+		free_item((void **)forks);
+	if (philos && *philos)
+		free_item((void **)philos);
+	if (i_phil && *i_phil)
+		free_item((void **)i_phil);
+}
+
 void	mutex_destroy(pthread_mutex_t *forks, int s)
 {
 	int	i;
-	i = 0;
 
+	if (!forks)
+		return ;
+	i = 0;
 	while (i < s)
 	{
 		if (pthread_mutex_destroy(&forks[i]) != 0)
 		{
 			printf("Error: Failed to destroy mutex for fork %d\n", i);
-			break ;
 		}
 		i++;
 	}
 }
 
-void	cleanup_table(t_table *table, char *text, int status)
+void	cleanup_table(t_table *table)
 {
-	if (status == 0 || status == 10)
+	if (!table)
+		return ;
+	if (table->forks)
 	{
 		mutex_destroy(table->forks, table->num_philos);
 		if (pthread_mutex_destroy(&table->print_lock) != 0)
 			printf("Error: Failed to destroy mutex for print_lock!\n");
 	}
-	else if (status == 1)
-		mutex_destroy(table->forks, table->num_philos);
-	if (status == 2)
-		free_memory(NULL, &table->philos, NULL);
-	else if (status == 3)
-		free_memory(NULL, &table->philos, &table->i_forks);
-	else
-		free_memory(&table->forks, &table->philos, &table->i_forks);
-	if (status != 10)
-		printf("Error: %s!\n", text);
-	exit(EXIT_FAILURE);
+	free_memory(&table->forks, &table->philos, &table->i_forks);
 }
