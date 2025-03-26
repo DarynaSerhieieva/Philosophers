@@ -1,99 +1,127 @@
 #include "philo.h"
 
-int	is_pos_num(int size, char **arrey)
+static void	assign_forks(t_philo *philo)
 {
-	int	i;
-	int	j;
+	int	tmp;
 
-	j = 1;
-	while (j < size)
+	philo->fork[0] = philo->id;
+	philo->fork[1] = (philo->id + 1) % philo->table->nb_philos;
+	if (philo->id % 2)
 	{
-		i = 0;
-		while (arrey[j][i] != '\0')
-		{
-			if (i == 0 && (arrey[j][i] == '+'))
-				i++;
-			else if ((arrey[j][i] < '0' || arrey[j][i] > '9'))
-			{
-				printf("Error: The argument %d is not positive int\n", j);
-				return (1);
-			}
-			i++;
-		}
-		j++;
+		tmp = philo->fork[0];
+		philo->fork[0] = philo->fork[1];
+		philo->fork[1] = tmp;
+	}
+}
+
+static int	initialize_philo(t_philo *philo, int id, t_table *table)
+{
+	if (!philo)
+		return (-1);
+	philo->id = id;
+	philo->meals_eaten = 0;
+	philo->table = table;
+	if (pthread_mutex_init(&philo->meal_lock, NULL) != 0)
+	{
+		printf("Error: Alloc mutex for meal lock failed!\n");
+		free(philo);
+		return (-1);
 	}
 	return (0);
 }
 
-
-void	fill_data(t_table *table, char **arrey)
+static t_philo	**init_philos(t_table *table)
 {
+	t_philo	**philos;
 	int		i;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	long	time;
 
+	philos = malloc(sizeof(t_philo) * table->nb_philos);
+	if (!philos)
+		return (printf("Error: Memory allocation for philos failed!\n"), NULL);
 	i = 0;
-	time_to_die = ft_atoi(arrey[2]);
-	time_to_eat = ft_atoi(arrey[3]);
-	time_to_sleep = ft_atoi(arrey[4]);
-	time = current_time_ms();
-	while (i < table->num_philos)
+	while (i < table->nb_philos)
 	{
-		table->i_forks[i] = 0;
-		table->philos[i].id = i + 1;
-		table->philos[i].time_to_die = time_to_die;
-		table->philos[i].time_to_eat = time_to_eat;
-		table->philos[i].time_to_sleep = time_to_sleep;
-		table->philos[i].last_meal_time = time;
-		table->philos[i].meals_eaten = 0;
-		table->philos[i].table = table;
+		philos[i] = malloc(sizeof(t_philo) * 1);
+		if (!philos[i] || initialize_philo(philos[i], i, table) != 0)
+		{
+			cleanup_philos(philos, i);
+			return (NULL);
+		}
+		assign_forks(philos[i]);
 		i++;
 	}
-	table->should_stop = 0;
-	table->must_eat = -1;
+	return (philos);
 }
 
-int	mem_all(t_table *table, int size)
+static int	init_mutexes(t_table *table)
 {
 	int	i;
 
 	i = 0;
-	table->philos = malloc(size * sizeof(t_philo));
-	if (!table->philos)
-		return (printf("Error: Memory allocation for philos failed!\n"), 1);
-	table->i_forks = malloc(size * sizeof(int));
-	if (!table->i_forks)
-		return (printf("Error: Memory allocation for forks failed!\n"), 1);
-	table->forks = malloc(size * sizeof(pthread_mutex_t));
-	if (!table->forks)
-		return (printf("Error: Allocation mutex for forks failed!\n"), 1);
+	if (pthread_mutex_init(&table->sim_stop, NULL) != 0)
+		return (printf("Error: Failed to initialize sim_stop mutex!\n"), 1);
 	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
-		return (printf("Error: Failed to initialize print lock mutex!\n"), 1);
-	while (i < size)
 	{
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-			return (printf("Error: Failed to initialize mutex for fork!\n"), 1);
+		if (pthread_mutex_destroy(&table->sim_stop) != 0)
+			return (printf("Error: Failed to destroy sim_stop mutex!\n"), 1);
+	}
+	table->forks = malloc(sizeof(pthread_mutex_t) * table->nb_philos);
+	if (!table->forks)
+	{
+		if (pthread_mutex_destroy(&table->sim_stop) != 0)
+			return (printf("Error: Failed to destroy sim_stop mutex!\n"), 1);
+		if (pthread_mutex_destroy(&table->print_lock) != 0)
+			return (printf("Error: Failed to destroy print_lock mutex!\n"), 1);
+	}
+	while (i < table->nb_philos)
+	{
+		if (pthread_mutex_init(&table->forks[i], 0) != 0)
+			return (1);
 		i++;
 	}
 	return (0);
 }
 
-int	init_table(t_table *table, int size, char **arrey)
+int	set_table(t_table *table, int size, char **arrey)
 {
-	int	num_philos;
+	int	i;
 
-	if (is_pos_num(size, arrey))
-		return (1);
-	num_philos = (int)ft_atoi(arrey[1]);
-	if (num_philos <= 0)
-		return (printf("Error: Number of philos must be at least 1.\n"), 1);
-	table->num_philos = num_philos;
-	if (mem_all(table, num_philos))
-		return (1);
-	if (size == 6)
-		table->must_eat = (int)ft_atoi(arrey[5]);
+	i = 0;
+	while (i < table->nb_philos)
+	{
+		if (pthread_mutex_init(&table->forks[i], 0) != 0)
+			return (1);
+		i++;
+	}
+	table->nb_philos = ft_atoi(arrey[1]);
+	table->time_to_die = ft_atoi(arrey[2]);
+	table->time_to_eat = ft_atoi(arrey[3]);
+	table->time_to_sleep = ft_atoi(arrey[4]);
+	table->must_eat = -1;
+	if (size - 1 == 5)
+		table->must_eat = ft_atoi(arrey[5]);
+	table->sim_stop = false;
+	return (0);
+}
+
+t_table	*init_table(int size, char **arrey)
+{
+	t_table	*table;
+
+	table = malloc(sizeof(t_table) * 1);
+	if (!table)
+		return (NULL);
+	if (set_table(table, size, arrey))
+	{
+		free(table);
+		return (NULL);
+	}
+	table->philos = init_philos(table);
+	if (!table->philos)
+	{
+		free(table);
+		return (NULL);
+	}
 	fill_data(table, arrey);
 	return (0);
 }
