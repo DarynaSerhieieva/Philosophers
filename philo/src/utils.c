@@ -39,12 +39,12 @@ int	is_valid(int size, char **arrey)
 			if (i == 0 && (arrey[j][i] == '+'))
 				i++;
 			else if ((arrey[j][i] < '0' || arrey[j][i] > '9'))
-				return (printf("Error: Argument %d is't positive int\n", j), 1);
+				return (print_error(j, "Is not positive int argument "), 1);
 			i++;
 		}
 		nb = ft_atoi(arrey[j]);
 		if (j == 1 && nb > 250)
-			return (printf("Error: Num of philos must be less then 250\n"), 1);
+			return (print_error(-1, "Philos sould not be exceed 250"), 1);
 		else if (nb == -1)
 			return (1);
 		j++;
@@ -61,10 +61,10 @@ long	current_time_ms(void)
 }
 
 
-static void	print_mutex_error(int id, char *message)
+void	print_error(int id, char *message)
 {
 	if (id == -1)
-		printf("Error: %s\n", message);
+		printf("Error: %s\n!", message);
 	else
 		printf("Error: %s %d!\n", message, id);
 }

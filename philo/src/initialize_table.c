@@ -6,12 +6,12 @@ static int	initialize_mutexes(t_table *table)
 
 	i = 0;
 	if (pthread_mutex_init(&table->stop_lock, NULL) != 0)
-		return (print_mutex_error(-1, "mutex_init failed stop_lock"), 1);
+		return (print_error(-1, "mutex_init failed stop_lock"), 1);
 	if (pthread_mutex_init(&table->print_lock, NULL) != 0)
 	{
-		print_mutex_error(-1, "mutex_init failed print_lock");
+		print_error(-1, "mutex_init failed print_lock");
 		if (pthread_mutex_destroy(&table->stop_lock) != 0)
-			return (print_mutex_error(-1, "mutex_destroy failed stop_lock"), 1);
+			return (print_error(-1, "mutex_destroy failed stop_lock"), 1);
 	}
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->nb_philos);
 	if (!table->forks)
@@ -20,7 +20,7 @@ static int	initialize_mutexes(t_table *table)
 	{
 		if (pthread_mutex_init(&table->forks[i], 0) != 0)
 		{
-			print_mutex_error(i, "mutex_init failed fork ");
+			print_error(i, "mutex_init failed fork ");
 			destroy_mutexes(table, i);
 			return (1);
 		}
@@ -29,7 +29,7 @@ static int	initialize_mutexes(t_table *table)
 	return (0);
 }
 
-void	initialize_table_data(t_table *table, int size, char **arrey)
+static void	initialize_table_data(t_table *table, int size, char **arrey)
 {
 	table->nb_philos = ft_atoi(arrey[1]);
 	table->time_to_die = ft_atoi(arrey[2]);

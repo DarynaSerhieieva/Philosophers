@@ -1,6 +1,6 @@
 #include "philo.h"
 
-static void	destroy_philos(t_philo **philos, int count)
+void	destroy_philos(t_philo **philos, int count)
 {
 	int	i;
 
@@ -18,7 +18,7 @@ static void	destroy_philos(t_philo **philos, int count)
 	free(philos);
 }
 
-static void	destroy_mutexes(t_table *table, int count)
+void	destroy_mutexes(t_table *table, int count)
 {
 	int	i;
 
