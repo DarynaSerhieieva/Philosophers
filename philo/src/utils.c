@@ -59,3 +59,12 @@ long	current_time_ms(void)
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
+
+
+static void	print_mutex_error(int id, char *message)
+{
+	if (id == -1)
+		printf("Error: %s\n", message);
+	else
+		printf("Error: %s %d!\n", message, id);
+}
