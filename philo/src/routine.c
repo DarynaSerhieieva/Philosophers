@@ -1,81 +1,69 @@
 #include <philo.h>
 
-void	thinking(t_philo *philo)
+static void	thinking(t_philo *philo, bool silent)
 {
-	if (time_to_die(philo))
-		return ;
-	pthread_mutex_lock(&philo->table->print_lock);
-	if (print_message(philo, "is thinking"))
-	{
-		pthread_mutex_unlock(&philo->table->print_lock);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->table->print_lock);
+	time_t	time_to_think;
+
+	pthread_mutex_lock(&philo->meal_lock);
+	time_to_think = (philo->table->time_to_die
+			- (get_time_in_ms() - philo->last_meal_time)
+			- philo->table->time_to_eat) / 2;
+	pthread_mutex_unlock(&philo->meal_lock);
+	if (time_to_think < 0)
+		time_to_think = 0;
+	if (time_to_think == 0 && silent == true)
+		time_to_think = 1;
+	if (time_to_think > 600)
+		time_to_think = 200;
+	if (silent == false)
+		print_message(philo, "is thinking");
+	philo_sleep(philo->table, time_to_think);
 }
 
-void	eating(t_philo *philo)
+static void	eating_sleeping(t_philo *philo)
 {
-	while (!time_to_die(philo))
+	pthread_mutex_lock(&philo->table->forks[philo->fork[0]]);
+	print_message(philo, "has taken a fork");
+	pthread_mutex_lock(&philo->table->forks[philo->fork[1]]);
+	print_message(philo, "has taken a fork");
+	print_message(philo, "is eating");
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->last_meal_time = get_time_in_ms();
+	pthread_mutex_unlock(&philo->meal_lock);
+	sleeping(philo->table, philo->table->time_to_eat);
+	if (has_simulation_stopped(philo->table) == false)
 	{
-		pthread_mutex_lock(&philo->table->print_lock);
-		if (!philo->table->i_forks[philo->id - 1] && \
-		!philo->table->i_forks[philo->id])
-		{
-			if (lock_fork(philo, philo->id - 1))
-				return ;
-			if (lock_fork(philo, philo->id))
-				return ;
-			if (print_message(philo, "is eating"))
-			{
-				unlock_forks(philo);
-				pthread_mutex_unlock(&philo->table->print_lock);
-				return ;
-			}
-			pthread_mutex_unlock(&philo->table->print_lock);
-			usleep(philo->time_to_eat * 1000);
-			unlock_forks(philo);
-			philo->meals_eaten++;
-			philo->last_meal_time = current_time_ms();
-			return ;
-		}
-		pthread_mutex_unlock(&philo->table->print_lock);
+		pthread_mutex_lock(&philo->meal_lock);
+		philo->meals_eaten += 1;
+		pthread_mutex_unlock(&philo->meal_lock);
+	}
+	print_message(philo, "is sleeping");
+	pthread_mutex_unlock(&philo->table->forks[philo->fork[1]]);
+	pthread_mutex_unlock(&philo->table->forks[philo->fork[0]]);
+	sleeping(philo->table, philo->table->time_to_sleep);
+}
+
+static void	sleeping(t_table *table, time_t sleep_time)
+{
+	time_t	wake_up;
+
+	wake_up = current_time_ms() + sleep_time;
+	while (current_time_ms() < wake_up)
+	{
+		if (has_simulation_stopped(table))
+			break ;
+		usleep(100);
 	}
 }
 
-void	sleeping(t_philo *philo)
+static void	*lone_philo_routine(t_philo *philo)
 {
-	if (time_to_die(philo))
-		return ;
-	pthread_mutex_lock(&philo->table->print_lock);
-	if (print_message(philo, "is sleeping"))
-	{
-		pthread_mutex_unlock(&philo->table->print_lock);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->table->print_lock);
-	usleep(philo->time_to_sleep * 1000);
-}
-
-int	time_to_die(t_philo *philo)
-{
-	long	time_of_death;
-
-	pthread_mutex_lock(&philo->table->print_lock);
-	if (philo->table->should_stop)
-	{
-		pthread_mutex_unlock(&philo->table->print_lock);
-		return (1);
-	}
-	time_of_death = current_time_ms();
-	if ((time_of_death - philo->last_meal_time) >= philo->time_to_die)
-	{
-		print_message(philo, "dead");
-		philo->table->should_stop = 1;
-		pthread_mutex_unlock(&philo->table->print_lock);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->table->print_lock);
-	return (0);
+	pthread_mutex_lock(&philo->table->forks[philo->fork[0]]);
+	print_message(philo, "has taken a fork");
+	sleeping(philo->table, philo->table->time_to_die);
+	print_message(philo, "dead");
+	pthread_mutex_unlock(&philo->table->forks[philo->fork[0]]);
+	return ;
 }
 
 void	*routine(void *arg)
@@ -83,23 +71,21 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->table->must_eat == 0 || philo->time_to_die == 0)
-		return (NULL);
-	if (philo->table->num_philos == 1)
-	{
-		pthread_mutex_lock(&philo->table->print_lock);
-		print_message(philo, "has taken a fork");
-		usleep(philo->time_to_die * 1000);
-		print_message(philo, "dead");
-		pthread_mutex_unlock(&philo->table->print_lock);
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->last_meal_time = philo->table->start_time;
+	pthread_mutex_unlock(&philo->meal_lock);
+	while (get_time_in_ms() < philo->table->start_time)
+		continue ;
+	if (philo->table->must_eat == 0 || philo->table->time_to_die == 0)
 		return ;
-	}
-	while (!time_to_die(philo) && \
-	(philo->meals_eaten != philo->table->must_eat || philo->table->must_eat == 0))
+	if (philo->table->nb_philos == 1)
+		return (lone_philo_routine(philo));
+	else if (philo->id % 2)
+		thinking(philo, true);
+	while (has_simulation_stopped(philo->table) == false)
 	{
 		eating(philo);
-		sleeping(philo);
-		thinking(philo);
+		thinking(philo, false);
 	}
-	return (NULL);
+	return ;
 }

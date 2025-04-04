@@ -60,6 +60,21 @@ long	current_time_ms(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
+void	print_message(t_philo *philo, char *massege)
+{
+	long	current_time;
+
+	pthread_mutex_lock(&philo->table->print_lock);
+	current_time = current_time_ms();
+	if (philo->table->is_sim_stopped)
+	{
+		pthread_mutex_unlock(&philo->table->print_lock);
+		return ;
+	}
+	printf("%ld %d %s\n", current_time, philo->id, massege);
+	pthread_mutex_unlock(&philo->table->print_lock);
+	return ;
+}
 
 void	print_error(int id, char *message)
 {

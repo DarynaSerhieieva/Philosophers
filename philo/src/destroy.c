@@ -37,3 +37,13 @@ void	destroy_mutexes(t_table *table, int count)
 	}
 	free(table->forks);
 }
+
+void	cleanup_table(t_table *table)
+{
+	if (!table)
+		return ;
+	mutex_destroy(table->forks, table->nb_philos);
+	destroy_philos(table->forks, table->nb_philos);
+	free(table);
+	table = NULL;
+}
