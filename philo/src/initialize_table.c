@@ -2,7 +2,7 @@
 
 static int	initialize_mutexes(t_table *table)
 {
-	int	i;
+	unsigned int	i;
 
 	i = 0;
 	if (pthread_mutex_init(&table->stop_lock, NULL) != 0)

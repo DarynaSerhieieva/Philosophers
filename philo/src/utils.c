@@ -52,14 +52,6 @@ int	is_valid(int size, char **arrey)
 	return (0);
 }
 
-long	current_time_ms(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
 void	print_message(t_philo *philo, char *massege)
 {
 	long	current_time;

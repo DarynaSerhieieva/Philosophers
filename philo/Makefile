@@ -7,7 +7,7 @@ SRC_DIR	= ./src/
 
 # Source files and object files
 SRC_FILES	= philo initialize_table initialize_philos destroy \
- 			utils  routine reaper 
+ 			utils  routine reaper time
 SRC = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ = $(SRC:.c=.o)
 

@@ -33,7 +33,7 @@ static int	initialize_philo(t_philo *philo, int id, t_table *table)
 t_philo	**initialize_philos(t_table *table)
 {
 	t_philo	**philos;
-	int		i;
+	unsigned int	i;
 
 	philos = malloc(sizeof(t_philo *) * table->nb_philos);
 	if (!philos)

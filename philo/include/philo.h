@@ -10,6 +10,8 @@
 # include <limits.h>
 #include <stdbool.h>
 
+typedef struct s_philo	t_philo;
+
 typedef struct s_table
 {
 	pthread_mutex_t	print_lock;
@@ -52,9 +54,12 @@ void	*routine(void *arg);
 void	*reaper(void *data);
 bool	has_simulation_stopped(t_table *table);
 
+//time
+time_t	current_time_ms(void);
+void	start_delay(time_t start_time);
+
 // utils
 long	ft_atoi(const char *nptr);
-long	current_time_ms(void);
 int		is_valid(int size, char **arrey);
 void	print_error(int id, char *message);
 void	print_message(t_philo *philo, char *massege);

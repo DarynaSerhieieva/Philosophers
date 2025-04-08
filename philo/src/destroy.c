@@ -10,7 +10,7 @@ void	destroy_philos(t_philo **philos, int count)
 		if (philos[i])
 		{
 			if (pthread_mutex_destroy(&philos[i]->meal_lock) != 0)
-				print_mutex_error(i, "Failed to destroy meal_lock mutex philo");
+				print_error(i, "Failed to destroy meal_lock mutex philo");
 			free(philos[i]);
 		}
 		i++;
@@ -24,15 +24,15 @@ void	destroy_mutexes(t_table *table, int count)
 
 	i = 0;
 	if (pthread_mutex_destroy(&table->stop_lock) != 0)
-		print_mutex_error(-1, "Failed to destroy stop_lock mutex");
+		print_error(-1, "Failed to destroy stop_lock mutex");
 	if (pthread_mutex_destroy(&table->print_lock) != 0)
-		print_mutex_error(-1, "Failed to destroy print_lock mutex");
+		print_error(-1, "Failed to destroy print_lock mutex");
 	if (count == 0)
 		return ;
 	while (i < count)
 	{
 		if (pthread_mutex_destroy(&table->forks[i]) != 0)
-			print_mutex_error(i, "Failed to destroy mutex fork ");
+			print_error(i, "Failed to destroy mutex fork ");
 		i++;
 	}
 	free(table->forks);
@@ -42,8 +42,8 @@ void	cleanup_table(t_table *table)
 {
 	if (!table)
 		return ;
-	mutex_destroy(table->forks, table->nb_philos);
-	destroy_philos(table->forks, table->nb_philos);
+	destroy_mutexes(table, table->nb_philos);
+	destroy_philos(table->philos, table->nb_philos);
 	free(table);
 	table = NULL;
 }

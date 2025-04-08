@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/04/04 17:11:10 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:51:09 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	stop_simulation(t_table	*table)
 {
-	int			i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < table->nb_philos)
@@ -26,13 +26,13 @@ static void	stop_simulation(t_table	*table)
 
 static int	start_simulation(t_table *table)
 {
-	int			i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < table->nb_philos)
 	{
 		if (pthread_create(&table->philos[i]->thread, NULL,
-				routine, &table->philos[i]) != 0)
+				routine, table->philos[i]) != 0)
 		{
 			print_error(i, "pthread_create faild for philo ");
 			return (i);
@@ -80,7 +80,7 @@ int	main(int argc, char **argv)
 	table = initialize_table(argc, argv);
 	if (!table)
 		return (1);
-	philo(&table);
-	cleanup_table(&table);
+	philo(table);
+	cleanup_table(table);
 	return (0);
 }
