@@ -8,7 +8,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <limits.h>
-#include <stdbool.h>
+# include <stdbool.h>
 
 typedef struct s_philo	t_philo;
 
