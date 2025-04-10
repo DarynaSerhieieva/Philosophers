@@ -44,12 +44,12 @@ To install the project and run the simulation:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/DarynaSerhieieva/Philosophers.git
+git clone https://github.com/DarynaSerhieieva/philosophers.git
 ```
 2. **Navigate into the project folder:**
 Open a folder:
 ```bash
-cd Philosopher/philo
+cd philosopher/philo
 ```
 ## Compilation
 Compile using the provided Makefile:
