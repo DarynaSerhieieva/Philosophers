@@ -1,5 +1,5 @@
 # 🧠 Philosophers
-## Without bonus.
+**Without bonus**
 
 A multithreaded simulation of the classic **Dining Philosophers Problem** using **threads** and **mutexes** in C.
 This project explores concurrency, synchronization, and resource sharing in a deadlock-free environment.
