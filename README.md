@@ -49,7 +49,7 @@ git clone https://github.com/DarynaSerhieieva/philosophers.git
 2. **Navigate into the project folder:**
 Open a folder:
 ```bash
-cd philosopher/philo
+cd philosophers/philo
 ```
 ## Compilation
 Compile using the provided Makefile:
@@ -75,9 +75,18 @@ Use your **own data** instead of `number_of_philosophers`, `time_to_die`, `time_
 ```bash
 ./philo 5 800 200 200
 ```
-This starts 5 philosophers who die after 800ms of starvation, eat for 200ms, and sleep for 200ms.
-With optional parameter:
+This starts 5 philosophers who:
+- Die after 800ms without eating,
+- Eat for 200ms,
+- Sleep for 200ms.
+
+⚠️ **Warning:**
+If you **don’t provide** the optional `number_of_times_each_philosopher_must_eat` argument, the simulation will run **indefinitely** until a philosopher dies of starvation.
+If the simulation is stable and no philosopher dies, it may run **forever**, using **constant CPU resources** — especially with many philosophers.
+
+To manually **stop** the simulation at any time, press `Ctrl + C` in the terminal.
+ 
+To run the simulation with a defined stop condition (e.g., each philosopher eats 5 times), use:
 ```bash
-./philo 5 800 200 200 7
+./philo 5 800 200 200 5
 ```
-This stops the simulation once all philosophers have eaten at least 7 times.
