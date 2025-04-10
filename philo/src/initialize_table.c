@@ -48,12 +48,12 @@ t_table	*initialize_table(int size, char **arrey)
 	table = malloc(sizeof(t_table) * 1);
 	if (!table)
 		return (NULL);
+	initialize_table_data(table, size, arrey);
 	if (initialize_mutexes(table))
 	{
 		free(table);
 		return (NULL);
 	}
-	initialize_table_data(table, size, arrey);
 	table->philos = initialize_philos(table);
 	if (!table->philos)
 	{

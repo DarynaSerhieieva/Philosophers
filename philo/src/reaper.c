@@ -27,7 +27,9 @@ static bool	kill_philo(t_philo *philo)
 	if ((time - philo->last_meal_time) >= philo->table->time_to_die)
 	{
 		set_stop_flag(philo->table, true);
-		print_message(philo, "dead");
+		pthread_mutex_lock(&philo->table->print_lock);
+		printf("%ld %d  died\n", time, philo->id);
+		pthread_mutex_unlock(&philo->table->print_lock);
 		pthread_mutex_unlock(&philo->meal_lock);
 		return (true);
 	}

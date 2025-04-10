@@ -6,7 +6,7 @@
 /*   By: dserhiei <dserhiei@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:10:48 by dserhiei          #+#    #+#             */
-/*   Updated: 2025/04/08 17:51:09 by dserhiei         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:36:51 by dserhiei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static void	stop_simulation(t_table	*table)
 		pthread_join(table->philos[i]->thread, NULL);
 		i++;
 	}
+	pthread_join(table->reaper, NULL);
 }
 
 static int	start_simulation(t_table *table)
