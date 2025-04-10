@@ -7,7 +7,7 @@ This project explores concurrency, synchronization, and resource sharing in a de
 - [Overview](#overview)
 - [Rules](#rules)
 - [How It Works](#how-it-works)
-- [Installation]()
+- [Installation](#installation)
 - [Compilation](#compilation)
 - [Usage](#usage)
 - [Example](#example)
