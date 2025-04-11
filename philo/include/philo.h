@@ -52,13 +52,13 @@ void	*routine(void *arg);
 
 //reaper
 void	*reaper(void *data);
-bool	has_simulation_stopped(t_table *table);
 
 //time
 time_t	current_time_ms(void);
 void	start_delay(time_t start_time);
 
 // utils
+bool	has_simulation_stopped(t_table *table);
 long	ft_atoi(const char *nptr);
 int		is_valid(int size, char **arrey);
 void	print_error(int id, char *message);

@@ -1,5 +1,17 @@
 #include "philo.h"
 
+bool	has_simulation_stopped(t_table *table)
+{
+	bool	r;
+
+	r = false;
+	pthread_mutex_lock(&table->stop_lock);
+	if (table->is_sim_stopped == true)
+		r = true;
+	pthread_mutex_unlock(&table->stop_lock);
+	return (r);
+}
+
 long	ft_atoi(const char *nptr)
 {
 	unsigned long	num;
@@ -58,12 +70,12 @@ void	print_message(t_philo *philo, char *massege)
 
 	pthread_mutex_lock(&philo->table->print_lock);
 	current_time = current_time_ms();
-	if (philo->table->is_sim_stopped)
+	if (has_simulation_stopped(philo->table))
 	{
 		pthread_mutex_unlock(&philo->table->print_lock);
 		return ;
 	}
-	printf("%ld %d %s\n", current_time, philo->id, massege);
+	printf("%ld %d %s\n", current_time, (philo->id + 1), massege);
 	pthread_mutex_unlock(&philo->table->print_lock);
 	return ;
 }

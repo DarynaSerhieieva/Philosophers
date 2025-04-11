@@ -7,18 +7,6 @@ static void	set_stop_flag(t_table *table, bool state)
 	pthread_mutex_unlock(&table->stop_lock);
 }
 
-bool	has_simulation_stopped(t_table *table)
-{
-	bool	r;
-
-	r = false;
-	pthread_mutex_lock(&table->stop_lock);
-	if (table->is_sim_stopped == true)
-		r = true;
-	pthread_mutex_unlock(&table->stop_lock);
-	return (r);
-}
-
 static bool	kill_philo(t_philo *philo)
 {
 	time_t	time;
@@ -28,7 +16,7 @@ static bool	kill_philo(t_philo *philo)
 	{
 		set_stop_flag(philo->table, true);
 		pthread_mutex_lock(&philo->table->print_lock);
-		printf("%ld %d  died\n", time, philo->id);
+		printf("%ld %d  died\n", time, (philo->id + 1));
 		pthread_mutex_unlock(&philo->table->print_lock);
 		pthread_mutex_unlock(&philo->meal_lock);
 		return (true);
